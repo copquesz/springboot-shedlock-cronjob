@@ -17,7 +17,6 @@ public class OrderJob {
     private final OrderProcessorService processor;
 
     @Scheduled(fixedRate = 1000)
-    @SchedulerLock(name = "generateOrders", lockAtLeastFor = "1s", lockAtMostFor = "20s")
     public void generateOrders() {
         generator.execute();
     }
