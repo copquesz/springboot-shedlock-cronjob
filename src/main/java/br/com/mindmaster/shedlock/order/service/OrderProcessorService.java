@@ -18,7 +18,7 @@ public class OrderProcessorService {
 
     @Transactional
     public void executePendingOrders() {
-        long start = System.nanoTime();
+        long startAll = System.nanoTime();
         List<Order> pendingOrders = repository.findPendingOrders();
 
         if (pendingOrders.isEmpty()) {
@@ -32,12 +32,20 @@ public class OrderProcessorService {
         int failed = 0;
 
         for (Order order : pendingOrders) {
+            if (Thread.currentThread().isInterrupted()) {
+                int processed = success + failed;
+                int remaining = pendingOrders.size() - processed;
+                log.warn("Shutdown in progress. Stopping processing loop gracefully. processed={} remaining={}", processed, remaining);
+                break;
+            }
+
+
             long startOne = System.nanoTime();
             try {
                 order.process();
                 repository.save(order);
-                long duration = (System.nanoTime() - startOne) / 1_000_000;
-                log.info("Order processed successfully. orderId={} durationMs={}", order.getId(), duration);
+                long tookOneMs = (System.nanoTime() - startOne) / 1_000_000;
+                log.info("Order processed successfully. orderId={} durationMs={}", order.getId(), tookOneMs);
                 success++;
             } catch (Exception ex) {
                 long tookOneMs = (System.nanoTime() - startOne) / 1_000_000;
@@ -46,9 +54,8 @@ public class OrderProcessorService {
             }
         }
 
-        long totalTime = (System.nanoTime() - start) / 1_000_000;
+        long tookAllMs = (System.nanoTime() - startAll) / 1_000_000;
         log.info("Processing finished. total={} success={} failed={} durationMs={}",
-                pendingOrders.size(), success, failed, totalTime);
-
+                pendingOrders.size(), success, failed, tookAllMs);
     }
 }

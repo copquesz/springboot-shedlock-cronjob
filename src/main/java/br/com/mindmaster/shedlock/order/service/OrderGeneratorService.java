@@ -18,7 +18,6 @@ public class OrderGeneratorService {
         Order order = new Order();
         orderRepository.save(order);
         log.info("New order generated and saved. orderId={}", order.getId());
-
     }
 
 }
