@@ -20,8 +20,6 @@ public class Order {
     @GeneratedValue
     private UUID id;
 
-    private String description;
-
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -32,6 +30,11 @@ public class Order {
     public Order() {
         createdAt = LocalDateTime.now();
         status = OrderStatus.PENDING;
+    }
+
+    public void process() {
+        this.status = OrderStatus.PROCESSED;
+        this.processedAt = LocalDateTime.now();
     }
 
 }

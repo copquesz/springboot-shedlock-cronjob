@@ -1,4 +1,4 @@
-package br.com.mindmaster.shedlock.config;
+package br.com.mindmaster.shedlock.shared.config;
 
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbc.JdbcLockProvider;
@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
+@EnableSchedulerLock(defaultLockAtMostFor = "1m")
 public class ShedLockConfig {
 
     @Bean
