@@ -17,14 +17,14 @@ public class OrderJob {
     private final OrderProcessorService processor;
 
     @Scheduled(fixedRate = 1000)
-    @SchedulerLock(name = "generateOrders", lockAtLeastFor = "1s", lockAtMostFor = "1m")
+    @SchedulerLock(name = "generateOrders", lockAtLeastFor = "1s", lockAtMostFor = "20s")
     public void generateOrders() {
         generator.execute();
     }
 
     @Scheduled(fixedRate = 3000)
-    @SchedulerLock(name = "processPendingOrders", lockAtLeastFor = "10s", lockAtMostFor = "1m")
-    public void processOrders() {
+    @SchedulerLock(name = "processPendingOrders", lockAtLeastFor = "10s", lockAtMostFor = "20s")
+    public void processPendingOrders() {
         processor.executePendingOrders();
     }
 }
