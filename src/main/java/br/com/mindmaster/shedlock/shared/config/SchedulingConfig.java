@@ -1,6 +1,5 @@
 package br.com.mindmaster.shedlock.shared.config;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,11 +26,6 @@ public class SchedulingConfig implements SchedulingConfigurer {
     @Override
     public void configureTasks(ScheduledTaskRegistrar registrar) {
         registrar.setTaskScheduler(taskScheduler());
-    }
-
-    @PostConstruct
-    void logSchedulerConfig() {
-        log.info("Custom TaskScheduler configured: poolSize={}, threadNamePrefix={}", 10, "scheduler-");
     }
 
 }
