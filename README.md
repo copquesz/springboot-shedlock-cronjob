@@ -26,6 +26,39 @@ Ideal for scenarios where you have multiple replicas of your application running
 - Configurable lock duration to avoid deadlocks  
 - Lightweight and non-intrusive  
 
+### Key Parameters
+
+When using ShedLock with Spring Boot’s @Scheduled jobs, the main configuration happens through the @SchedulerLock annotation. It controls how the distributed lock behaves.
+Main Parameters
+
+- name (required)
+   - A unique identifier for the lock. Typically, use the job name or method name to distinguish locks for different scheduled tasks.
+
+- lockAtMostFor
+   - The maximum duration that the lock will be held, even if the job is still running.
+   - This prevents deadlocks in case the instance crashes or the job hangs.
+   - Example: "PT30S" (ISO-8601 duration for 30 seconds)
+
+- lockAtLeastFor
+   - The minimum duration that the lock will be held.
+   - This ensures the job does not execute too frequently if it finishes quickly.
+   - Example: "PT10S" (10 seconds)
+
+```java
+@Scheduled(cron = "0/10 * * * * ?")
+@SchedulerLock(name = "processPendingOrders", lockAtMostFor = "PT30S", lockAtLeastFor = "PT10S")
+public void processPendingOrders() {
+    // job logic here
+}
+```
+
+**Notes**
+- Both lockAtMostFor and lockAtLeastFor use ISO-8601 duration format (e.g., "PT15M" for 15 minutes, "PT5S" for 5 seconds).
+- Always set lockAtMostFor to a value slightly longer than the expected max job runtime to avoid overlapping jobs after crashes.
+- lockAtLeastFor is optional but can help throttle execution frequency.
+- If lockAtMostFor is not set, the lock may remain indefinitely, risking deadlocks.
+
+
 ---
 
 ## Running Locally & Observing Behavior
